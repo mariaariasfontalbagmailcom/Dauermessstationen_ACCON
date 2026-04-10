@@ -1,4 +1,4 @@
-<<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="de">
 <head>
     <meta charset="UTF-8">
@@ -568,41 +568,18 @@
             `);
         });
 
-        function copyToClipboard(text, buttonId) {
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(text).then(() => {
-                    const btn = document.getElementById(buttonId);
-                    const originalText = btn.innerHTML;
-                    btn.innerHTML = '✓ Kopiert!';
-                    btn.classList.add('copied');
-                    setTimeout(() => {
-                        btn.innerHTML = originalText;
-                        btn.classList.remove('copied');
-                    }, 2000);
-                }).catch(err => {
-                    alert('URL kopiert: ' + text);
-                });
-            } else {
-                const textArea = document.createElement('textarea');
-                textArea.value = text;
-                textArea.style.position = 'fixed';
-                textArea.style.opacity = '0';
-                document.body.appendChild(textArea);
-                textArea.select();
-                try {
-                    document.execCommand('copy');
-                    const btn = document.getElementById(buttonId);
-                    const originalText = btn.innerHTML;
-                    btn.innerHTML = '✓ Kopiert!';
-                    btn.classList.add('copied');
-                    setTimeout(() => {
-                        btn.innerHTML = originalText;
-                        btn.classList.remove('copied');
-                    }, 2000);
-                } catch (err) {
-                    alert('URL: ' + text);
-                }
-                document.body.removeChild(textArea);
+        function openDeviceURL(url, buttonId) {
+            // En móvil, abrir directamente la URL en nueva pestaña
+            if (isMobile) {
+                window.open(url, '_blank');
+                const btn = document.getElementById(buttonId);
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '✓ Geöffnet!';
+                btn.classList.add('copied');
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.classList.remove('copied');
+                }, 2000);
             }
         }
 
@@ -638,11 +615,10 @@
                     actionsHtml = `
                         <div class="mobile-hint">
                             <strong>📱 Mobile Ansicht</strong>
-                            Kopiere die URL und füge sie in deinem Browser ein, um das Gerät zu öffnen.
+                            Ein Klick öffnet das Gerät in einem neuen Tab. Dein Browser wird möglicherweise um Bestätigung bitten.
                         </div>
-                        <div class="url-display">${station.url}</div>
-                        <button class="btn btn-copy" id="copyBtn${index}" onclick="copyToClipboard('${station.url}', 'copyBtn${index}')">
-                            📋 URL kopieren
+                        <button class="btn btn-copy" id="openBtn${index}" onclick="openDeviceURL('${station.url}', 'openBtn${index}')">
+                            🔗 Gerät öffnen
                         </button>
                         <button class="btn btn-secondary" onclick="zoomToStation(${station.coordinates.lat}, ${station.coordinates.lng})">
                             📍 Auf Karte
